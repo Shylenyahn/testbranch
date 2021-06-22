@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	   xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	   layout:decorate="@{layout/default}">
+
+<th:block layout:fragment="customTitle">
+	<title th:text="${title}"></title>
+</th:block>
+
+<th:block layout:fragment="customContents">
+	<!-- <div th:include="member/search :: searchFragment"></div> -->
+	<table border="1">
+		<thead>
+			<tr>
+				<th>상품코드</th>
+				<th>상품이름</th>
+				<th>상품가격</th>
+				<th>판매자아이디</th>
+				<th>판매자이름</th>
+				<th>판매자이메일</th>
+				<th>상품등록일자</th>
+				<th>수정</th>
+				<th>삭제</th>
+			</tr>
+			
+		</thead>
+		<tbody>
+			<tr th:if="${#lists.size(goodsList)>0}" th:each="l:${goodsList}">
+				<td th:text="${l.goodsCode}"></td>
+				<td th:text="${l.goodsName}"></td>
+				<td th:text="${l.goodsPrice}"></td>
+				<td th:text="${l.goodsSellerId}"></td>
+				<td th:text="${l.member.memberName}"></td>
+				<td th:text="${l.member.memberEmail}"></td>
+				<td th:text="${l.goodsRegDate}"></td>
+				<td>
+					<a th:href="@{/modifyGoods(goodsCode=${l.goodsCode})}">수정</a> <!--<a th:href="@{/modifyMember(memberId=${l.memberId},memberPw=${l.memberPw})}">수정</a>  -->  <!-- 타임리프 get방식으로 쿼리 스트링 보내는 방법. ?는()이고 &는 ,(콤마)이다.  -->
+				</td>
+				<td>
+					<a th:href="@{/removeGoods(goodsCode=${l.goodsCode})}">삭제</a> <!--mapper, service, controller 다 해놓고 여기를   memberId=${l.goodsSellerId} 이렇게하니...에러가 나지...-->
+				</td>
+				
+			</tr>
+			
+			<tr th:unless="${#lists.size(goodsList)>0}" style="text-align: center;">
+				 <td colspan="9"  th:text="${'검색한결과가 없습니다.'}"></td>
+			</tr>
+		</tbody>
+	</table>
+</th:block>
+</html>

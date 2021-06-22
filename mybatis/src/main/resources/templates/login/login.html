@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	   xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	   layout:decorate="@{layout/default}">
+
+<th:block layout:fragment="customTitle">
+	<title th:text="${title}"></title>
+</th:block>
+
+<th:block layout:fragment="customContents">
+	<!--header쪽 작성하고 난뒤 여기 작성하고 MemberController가서 GetMapping한다.  -->
+	<!--수업에서는 table쓰지만 div하고 싶으면 div해도 된다.  -->
+	<form th:action="@{/login}" method="post">
+		
+
+
+		<table border="1">
+			<tr>
+				<td>아이디</td>
+				<td>
+					<input type="text" name="memberId" placeholder="회원아이디를 입력해주세요.">
+				</td>
+			</tr>
+			<tr>
+				<td>비밀번호</td>
+				<td>
+					<input type="text" name="memberPw" placeholder="비밀번호를 입력해주세요.">
+				</td>
+			</tr>
+			
+			
+			 
+			
+			
+			<tr>
+				<td colspan="2" style="text-align: center;">
+					<button type="submit">로그인</button>
+				</td>
+			</tr>
+			
+			
+			
+			 <tr th:if="${loginResult}" style="text-align: center;">
+				 <td colspan="9"  th:text="${loginResult}"></td>
+			</tr>   <!-- 밑의 레이블 참고해서 테이블 안에다가 해보자 => 잘 된다.-->
+			
+			
+			
+		</table>
+		<!-- <label th:if="${loginResult!=null}" th:text="${loginResult}"></label>  -->
+	
+</form>
+</th:block>
+</html>

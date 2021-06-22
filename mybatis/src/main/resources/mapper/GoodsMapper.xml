@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- https://mybatis.org/mybatis-3/ko/getting-started.html 에서 매핑된 SQL 구문 살펴보기 부분의 아래쪽에 코드 복사 -->
+
+
+<mapper namespace="ksmart39.mybatis.dao.GoodsMapper">
+	
+	
+
+	
+	<resultMap type="Goods" id="goodsResultMap">
+		<result property="goodsCode" 		column="g_code"/>
+		<result property="goodsName" 		column="g_name"/>
+		<result property="goodsPrice" 		column="g_price"/>
+		<result property="goodsRegDate" 		column="g_reg_date"/>
+		<result property="goodsSellerId" 		column="g_seller_id"/>
+		<association property="member" javaType="Member">
+			<id property="memberId"		column="m_id"/>
+			<result property="memberPw" column="m_pw"/>
+			<result property="memberName" column="m_name"/>
+			<result property="memberLevel" column="m_level"/>
+			<result property="memberRegDate" column="m_reg_date"/>
+			<result property="memberAddr" column="m_addr"/>
+			<result property="memberEmail" column="m_email"/>
+			
+		</association>
+		
+	</resultMap>
+	
+	
+	<!--상품 조회  -->
+	<select id="getGoodsList" parameterType="map" resultMap="goodsResultMap">
+		SELECT
+			g.g_code
+			,g.g_name
+			,g.g_price
+			,g.g_seller_id
+			,m.m_name
+			,m.m_email
+			,g.g_reg_date
+		FROM 
+			tb_goods AS g
+			INNER JOIN 
+			tb_member AS m
+			ON 
+			g.g_seller_id= m.m_id;
+		<trim prefix="WHERE" prefixOverrides="AND |OR ">
+			<if test="memberId != null and memberId != ''.toString()">
+				g.g_seller_id = #{memberId};
+			</if>
+		</trim>
+		
+	</select>
+	
+	
+	<!--상품등록  -->
+	<insert id="addGoods" parameterType="Goods">
+		INSERT INTO tb_goods
+		(	  g_code
+			, g_name
+			, g_price
+			, g_seller_id
+			, g_reg_date
+		) VALUES (
+			sf_newGoodsCode()
+			, #{goodsName}
+			, #{goodsPrice}
+			, #{goodsSellerId}
+			, CURDATE())
+	</insert>
+	
+	<!--수정폼 (select)  -->
+	<select id="getGoodsInfoByCode" parameterType="String" resultMap="goodsResultMap"><!--resultMap해야되는데   parameterMap으로 해서 안됐음, 그리고 logback.xml에서 root쪽 level을 error로 해 놔야 시스템(코어단) 로그를 볼 수 있다.-->
+		SELECT
+			g_code <!--필요함 당연히...  -->
+			,g_name
+			,g_price
+		FROM
+			tb_goods AS g
+		WHERE 
+			g.g_code=#{goodsCode};
+	
+	</select>
+	
+	<!--수정(update)  -->
+	<update id="modifyGoods" parameterType="Goods">
+		UPDATE	tb_goods
+	<trim prefix="SET" prefixOverrides=",">
+		<if test="goodsName != null and goodsName != ''.toString()">	
+			g_name=#{goodsName}
+		</if>
+		 
+		<if test="goodsPrice != null and goodsPrice != ''.toString()">
+			,g_price=#{goodsPrice}
+		</if>	
+			
+	</trim>	
+		WHERE 
+			g_code=#{goodsCode};	
+
+	</update>
+	
+	
+	
+</mapper>
+

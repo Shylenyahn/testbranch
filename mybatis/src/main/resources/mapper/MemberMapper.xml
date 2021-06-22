@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- https://mybatis.org/mybatis-3/ko/getting-started.html 에서 매핑된 SQL 구문 살펴보기 부분의 아래쪽에 코드 복사 -->
+
+
+<mapper namespace="ksmart39.mybatis.dao.MemberMapper">
+	
+	<resultMap type="Member" id="memberResultMap">
+		<result property="memberId" 		column="m_id"/>
+		<result property="memberPw" 		column="m_pw"/>
+		<result property="memberName" 		column="m_name"/>
+		<result property="memberLevel" 		column="m_level"/>
+		<result property="memberEmail" 		column="m_email"/>
+		<result property="memberAddr" 		column="m_addr"/>
+		<result property="memberRegDate" 	column="m_reg_date"/>
+	</resultMap>
+	
+	
+	
+	
+	
+	<!-- 위어꺼 방식을 쓰고 한다면(아래에 AS 안쓰고) : <select id="getMemberList" resultMap="memberResultMap"> -->
+	<!-- 전체리스트 -->
+	<select id="getMemberList" parameterType="map" resultType="Member" fetchSize="1000">    <!--List형태면 List로 자동 반환해줌... List<Member>와 같이  -->   <!--패치사이즈?  -->
+		SELECT 
+			 m_id			AS memberId 
+			,m_pw 			AS memberPw
+			,m_name 		AS memberName
+			,m_level 		AS memberLevel
+			,m_email 		AS memberEmail
+			,m_addr 		AS memberAddr
+			,m_reg_date		AS memberRegDate
+		FROM 
+			tb_member
+		<trim prefix="WHERE" prefixOverrides="AND |OR ">
+			<if test="searchKey != null and searchKey !=''.toString()">
+				${searchKey} LIKE CONCAT('%',#{searchValue} ,'%');
+			</if>
+		</trim>			
+	</select>
+	
+	<!--입력 (회원가입) -->
+	<insert id="addMember" parameterType="Member">
+		INSERT INTO tb_member
+		(m_id
+		,m_pw
+		,m_name
+		,m_level
+		,m_addr
+		,m_email
+		,m_reg_date
+		)VALUES(
+		#{memberId}
+		,#{memberPw}
+		,#{memberName}
+		,#{memberLevel}
+		,#{memberAddr}
+		,#{memberEmail}
+		,CURDATE());
+	</insert>
+	<!--'id016'   의 값을 위와 같이 #{memberId}로 바인딩 해주었음
+		,'pw016'
+		,'홍16'
+		,2
+		,'금암동'
+		,'홍16@ksmart.or.kr'  -->
+	
+	
+
+	
+	<!--수정폼  -->
+	<select id="getMemberInfoById" parameterType="String" resultMap="memberResultMap" >
+		SELECT 
+			 m_id			
+			,m_pw 			
+			,m_name 		
+			,m_level 		
+			,m_email 		
+			,m_addr 		
+			,m_reg_date		
+		FROM 
+			tb_member AS m
+		WHERE 
+			m.m_id=#{memberId}
+	
+	</select>
+	
+	<!--업데이트 (하고난 뒤 리스트로 갈거다.)  --><!--<if test="memberPw != null and memberPw != ''.toString()"> null이나 공백해도 값을 유지하기 위해서   toString은 혹시 몰라서... 확실하게 문자열로 비교하게 위해서-->
+	<!-- <if test="memberPw != null and memberPw != ''.toString()">	 test="memberPw <-파라미터 받을 때 #안써도 된다-> mybatis태그 안 속성에서는 안해도 된다는 말이다.  -->
+	<update id="modifyMember" parameterType="Member">
+	UPDATE tb_member
+	<trim prefix="SET" prefixOverrides=",">
+		<if test="memberPw != null and memberPw != ''.toString()">	
+			m_pw =#{memberPw}
+		</if>
+		<if test="memberLevel != null and memberLevel != ''.toString()">	
+			,m_level=#{memberLevel}
+		</if>
+		<if test="memberName != null and memberName != ''.toString()">	
+			,m_name=#{memberName}
+		</if>
+		<if test="memberEmail != null and memberEmail != ''.toString()">	
+			,m_email=#{memberEmail}
+		</if>
+		<if test="memberAddr != null and memberAddr != ''.toString()">	
+			,m_addr=#{memberAddr} 
+		</if>
+				
+	</trim>
+	WHERE 
+		m_id=#{memberId};
+	
+	</update>
+	
+	
+	<!--삭제 폼을 위한 delete문  -->
+	<delete id="removeLoginById" parameterType="String">
+		DELETE
+		FROM
+			tb_login
+		WHERE
+			login_id = #{memberId};
+	</delete>
+	<delete id="removeOrderById" parameterType="String">
+		DELETE
+		FROM
+			tb_order
+		WHERE
+			o_id = #{memberId};
+	</delete>
+	<delete id="removeOrderBySellerId" parameterType="String">
+		DELETE 
+		o
+		FROM 
+			tb_goods AS g
+			INNER JOIN 
+			tb_order AS o
+			ON 
+			g.g_code = o.o_g_code
+		WHERE 
+			g.g_seller_id = #{memberId};
+
+	</delete>
+	<delete id="removeGoodsById" parameterType="String">
+		DELETE
+		FROM
+			tb_goods
+		WHERE
+			g_seller_id = #{memberId};
+	</delete>
+	<delete id="removeMemberById" parameterType="String">
+		DELETE
+		FROM
+			tb_member
+		WHERE
+			m_id = #{memberId};
+	</delete>
+	
+	
+	
+</mapper>
+

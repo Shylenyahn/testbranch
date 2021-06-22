@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<!-- Begin Header  -->
+<div id="header" th:fragment="headerFragment" >
+	head.html<br>
+	상단메뉴<br><br>
+	
+	<a th:if="${session.SID==null or session.SLEVEL =='1'}" th:href="@{/addMember}">01.회원가입</a> <!--th:쓰고  @{/addMember}  -->
+	<a th:if="${session.SLEVEL =='1'}"th:href="@{/memberList}">02.회원전체검색</a>  <!--th:쓰고 @{/memberList추가}  -->
+	<a th:if="${session.SLEVEL =='1' or session.SLEVEL =='2'}" th:href="@{/addGoods}">03.상품등록</a> <!--th로 링크를 쓰려면 @ 꼭 써라  -->
+	<a th:if="${session.SID ne null}" th:href="@{/goodsList}">04.상품전체검색</a>
+	<a th:if="${session.SID eq null}" th:href="@{/login}">05.로그인</a>
+	<a th:unless="${session.SID eq null}" th:href="@{/logout}">06.로그아웃</a>   
+	<!--thymeleaf에서 ne는 not equal, eq는 equal이고,   mybatis는 neq가 not equal이다.  -->
+	<!-- 이 방법 말고 th로 하는게 유지보수면에서 좋을 수 있다. -->
+	
+	<br>
+	<div th:if="${session.SID != null}" style="text-align: right;">
+		<label>아이디: [[${session.SID}]],회원권한: [[${session.SLEVELNAME}]], 회원이름: [[${session.SNAME}]] 님이 로그인 하셨습니다.</label>
+	</div>
+</div>
+<!-- End Header  -->
+</html>
+
